@@ -4,7 +4,9 @@ extends CharacterBody2D
 @export var turn_speed := 2.5 # radians per second
 @onready var crash_timer: Timer = $CrashTimer
 
-var health = 100.0
+var taking_damage = false
+
+var health = PlayerStats.health
 
 func _physics_process(delta: float) -> void:
 	if health <= 0:
@@ -20,7 +22,7 @@ func _physics_process(delta: float) -> void:
 
 	var collision = move_and_collide(velocity * delta)
 	
-	if collision and collision.get_collider() and collision.get_collider() is StaticBody2D:
+	if collision and collision.get_collider() and collision.get_collider() is TileMapLayer:
 		take_damage()
 	
 func _on_area_2d_body_entered(body: Node2D) -> void:
@@ -31,7 +33,13 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 		print("Health: ", health)
 
 func take_damage():
-	crash_timer.start()
+	if not taking_damage:
+		taking_damage = true
+		health -= 10
+		PlayerStats.health = health	
+		crash_timer.start()
+	
 
 func _on_crash_timer_timeout() -> void:
-	health -= 10
+	taking_damage = false
+	
