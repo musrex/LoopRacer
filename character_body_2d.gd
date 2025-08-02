@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var speed := 100.0 # pixels per second
-@export var turn_speed := 2.0 # radians per second
+@export var turn_speed := 2.5 # radians per second
 @onready var crash_timer: Timer = $CrashTimer
 
 var health = 100.0
@@ -24,9 +24,11 @@ func _physics_process(delta: float) -> void:
 		take_damage()
 	
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	speed += 10
-	print("Speed: ", speed)
-	print("Health: ", health)
+	if body.is_in_group("Player"):
+		speed += 10
+		PlayerStats.lap += 1
+		print("Speed: ", speed)
+		print("Health: ", health)
 
 func take_damage():
 	crash_timer.start()
